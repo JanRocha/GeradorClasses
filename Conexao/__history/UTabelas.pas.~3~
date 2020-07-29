@@ -1,0 +1,15 @@
+unit UTabelas;
+
+interface
+
+uses
+  UConexao;
+
+type
+  TTabela = class
+
+  end;
+
+implementation
+
+end.

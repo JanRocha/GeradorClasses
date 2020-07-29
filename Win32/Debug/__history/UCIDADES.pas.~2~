@@ -1,0 +1,30 @@
+unit UCIDADES;
+
+interface
+
+uses
+  Classes;
+
+type
+  TCIDADES = class(TPersistent)
+  private
+    FCODIGO: String;
+    FCIDADE: String;
+    FUF: String;
+  published
+    property CODIGO: String read FCODIGO write FCODIGO;
+    property CIDADE: String read FCIDADE write FCIDADE;
+    property UF: String read FUF write FUF;
+   function NomeTabela():string;
+  end;
+
+implementation
+
+{CIDADES}
+
+function TCIDADES.NomeTabela: string;
+begin
+   Result:= 'CIDADES';
+end;
+
+end.

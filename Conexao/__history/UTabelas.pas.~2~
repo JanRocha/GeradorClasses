@@ -1,0 +1,12 @@
+unit UTabelas;
+
+interface
+
+type
+  TTabela = class
+
+  end;
+
+implementation
+
+end.

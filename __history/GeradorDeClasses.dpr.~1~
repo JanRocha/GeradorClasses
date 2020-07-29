@@ -1,0 +1,17 @@
+program GeradorDeClasses;
+
+uses
+  System.StartUpCopy,
+  FMX.Forms,
+  UPrincipal in 'UPrincipal.pas' {Form2},
+  UConexao in '..\HostLine\GeradorDeClasses\Conexao\UConexao.pas',
+  UConfigDB in '..\HostLine\GeradorDeClasses\Conexao\UConfigDB.pas',
+  UTabelas in '..\HostLine\GeradorDeClasses\Conexao\UTabelas.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TForm2, Form2);
+  Application.Run;
+end.

@@ -1,0 +1,15 @@
+unit Ucontas_receber;
+
+interface
+
+uses
+  Classes;
+
+type
+  Tcontas_receber= class(TPersistent)
+  private
+  end;
+
+implementation
+
+end.

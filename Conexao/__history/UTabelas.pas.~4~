@@ -1,0 +1,19 @@
+unit UTabelas;
+
+interface
+
+uses
+  UConexao,
+  FireDAC.Comp.Client;
+
+type
+  TTabela = class
+  private
+    FQuery: TFDQuery;
+  published
+    property Query: TFDQuery read FQuery write FQuery;
+  end;
+
+implementation
+
+end.
