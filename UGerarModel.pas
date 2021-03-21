@@ -63,7 +63,7 @@ begin
   while not oTabela.Query.Eof do
   begin
     Memo1.Lines.Add('    F' + oTabela.Query.FieldByName('Nome_Campo').AsString + ': '+
-    ValidaCampo(oTabela.Query.FieldByName('Nome_Campo').AsString) +';');
+    ValidaCampo(oTabela.Query.FieldByName('Tipo_Campo').AsString) +';');
     oTabela.Query.Next;
   end;
   Memo1.Lines.Add('  published');
@@ -84,7 +84,7 @@ begin
   Memo1.Lines.Add('');
   Memo1.Lines.Add('{T'+Tabela+'}');
   Memo1.Lines.Add('');
-  Memo1.Lines.Add('function TCIDADES.NomeTabela: string;');
+  Memo1.Lines.Add('function T'+ Tabela+'.NomeTabela: string;');
   Memo1.Lines.Add('begin');
   Memo1.Lines.Add('   Result:= '''+ Tabela + ''';');
   Memo1.Lines.Add('end;');
@@ -97,6 +97,8 @@ end;
 function TGerarModel.ValidaCampo(value: string): string;
 begin
   if value = 'SMALLINT' then
+    Result := 'integer'
+  else if value = 'INTEGER' then
     Result := 'integer'
   else if value = 'SMALLINT' then
     Result := 'integer'

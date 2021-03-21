@@ -62,7 +62,7 @@ begin
   Memo1.Lines.Add('  private');
   while not oTabela.Query.Eof do
   begin
-    Memo1.Lines.Add('   F' + oTabela.Query.FieldByName('Nome_Campo').AsString + ': '+
+    Memo1.Lines.Add('    F' + oTabela.Query.FieldByName('Nome_Campo').AsString + ': '+
     ValidaCampo(oTabela.Query.FieldByName('Nome_Campo').AsString) +';');
     oTabela.Query.Next;
   end;
@@ -70,16 +70,24 @@ begin
   oTabela.Query.First;
   while not oTabela.Query.Eof do
   begin
-    Memo1.Lines.Add('   property ' +
+    Memo1.Lines.Add('    property ' +
     oTabela.Query.FieldByName('Nome_Campo').AsString + ': ' +
     ValidaCampo(oTabela.Query.FieldByName('Tipo_Campo').AsString)+
      ' read F'+ oTabela.Query.FieldByName('Nome_Campo').AsString+
      ' write F'+ oTabela.Query.FieldByName('Nome_Campo').AsString +';');
     oTabela.Query.Next;
   end;
+  Memo1.Lines.Add('   function NomeTabela():string;');
   Memo1.Lines.Add('  end;');
   Memo1.Lines.Add('');
   Memo1.Lines.Add('implementation');
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('{T'+Tabela+'}');
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('function T'+ Tabela+'.NomeTabela: string;');
+  Memo1.Lines.Add('begin');
+  Memo1.Lines.Add('   Result:= '''+ Tabela + ''';');
+  Memo1.Lines.Add('end;');
   Memo1.Lines.Add('');
   Memo1.Lines.Add('end.');
 
