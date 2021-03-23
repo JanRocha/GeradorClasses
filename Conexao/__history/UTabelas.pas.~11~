@@ -4,11 +4,10 @@ interface
 
 uses
   UConexao,
-  Classes,
   FireDAC.Comp.Client;
 
 type
-  TTabela = class(Tpersistent)
+  TTabela = class
   private
     FQuery: TFDQuery;
     FConn : TConexao;

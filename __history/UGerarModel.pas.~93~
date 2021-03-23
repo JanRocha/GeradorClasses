@@ -91,7 +91,7 @@ begin
   Memo1.Lines.Add('   function Delete(): boolean;                   ');
   Memo1.Lines.Add('   function NomeGenerator(): string;             ');
   Memo1.Lines.Add('   constructor Create(_id:integer = -1); ');
-  Memo1.Lines.Add('   constructor CreateFirst(_Filter:string = ''''); ');
+  Memo1.Lines.Add('   constructor CreateFirst(_Filter = ''''); ');
   Memo1.Lines.Add('  end;');
   Memo1.Lines.Add('');
   Memo1.Lines.Add('implementation');

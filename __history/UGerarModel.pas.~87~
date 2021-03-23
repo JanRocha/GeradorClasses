@@ -51,9 +51,9 @@ begin
   oTabela.Query.SQL.Add(' ORDER BY R.RDB$FIELD_POSITION');
 
   oTabela.Query.Open();
-  Tabela:= PrimeiraLetraMaiscula(Tabela);
+
   Memo1 := TMemo.Create(nil);
-  Memo1.Lines.Add('unit U' + Tabela + ';');
+  Memo1.Lines.Add('unit U' + PrimeiraLetraMaiscula(Tabela) + ';');
   Memo1.Lines.Add('');
   Memo1.Lines.Add('interface');
   Memo1.Lines.Add('');
@@ -65,7 +65,7 @@ begin
   Memo1.Lines.Add('  UTabela;                    ');
   Memo1.Lines.Add('');
   Memo1.Lines.Add('type');
-  Memo1.Lines.Add('  T' + Tabela + ' = class(TPersistent)');
+  Memo1.Lines.Add('  T' + PrimeiraLetraMaiscula(Tabela) + ' = class(TPersistent)');
   Memo1.Lines.Add('  private');
   Memo1.Lines.Add('    FTabela: TTabela;');
   while not oTabela.Query.Eof do
@@ -78,20 +78,19 @@ begin
   oTabela.Query.First;
   while not oTabela.Query.Eof do
   begin
-    Memo1.Lines.Add('    property ' +PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) + ': ' +
+    Memo1.Lines.Add('    property ' +(oTabela.Query.FieldByName('Nome_Campo').AsString) + ': ' +
     ValidaCampo(oTabela.Query.FieldByName('Tipo_Campo').AsString,oTabela.Query.FieldByName('PRECISAO').AsString,oTabela.Query.FieldByName('SUB_TIPO').AsString)+
-     ' read F' + PrimeiraLetraMaiscula(PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString)) +
-     ' write F'+ PrimeiraLetraMaiscula(PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString)) +';');
+     ' read F' + PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) +
+     ' write F'+ PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) +';');
     oTabela.Query.Next;
   end;
-  Memo1.Lines.Add('public');
   Memo1.Lines.Add('   function NomeTabela():string;');
   Memo1.Lines.Add('   function Carregar(): TObjectList<T'+Tabela+'>;');
   Memo1.Lines.Add('   function Gravar(): boolean;                   ');
   Memo1.Lines.Add('   function Delete(): boolean;                   ');
   Memo1.Lines.Add('   function NomeGenerator(): string;             ');
-  Memo1.Lines.Add('   constructor Create(_id:integer = -1); ');
-  Memo1.Lines.Add('   constructor CreateFirst(_Filter:string = ''''); ');
+  Memo1.Lines.Add('   constructor Create(_id:integer = -1);overload; ');
+  Memo1.Lines.Add('   constructor Create(_Filter = '');overload; ');
   Memo1.Lines.Add('  end;');
   Memo1.Lines.Add('');
   Memo1.Lines.Add('implementation');
@@ -123,13 +122,13 @@ begin
   Memo1.Lines.Add('end;');
   Memo1.Lines.Add('');
 
-  Memo1.Lines.Add('constructor T'+ Tabela+'.CreateFirst(_Filter: string);');
+  Memo1.Lines.Add('constructor T'+ Tabela+'.Create(_Filter: string);');
   Memo1.Lines.Add('var');
   Memo1.Lines.Add('FTabela: TTabela;  ');
   Memo1.Lines.Add('oqry   : TSQLQuery;');
   Memo1.Lines.Add('sSQL   : string;   ');
   Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('if _Filter <> '''' then                                     ');
+  Memo1.Lines.Add('if _Filter <> '' then                                     ');
   Memo1.Lines.Add('begin                                               ');
   Memo1.Lines.Add('_filter:= '' WHERE '' + _filter;');
   Memo1.Lines.Add('  sSQL    := ''SELECT * FROM '' + NomeTabela;         ');
@@ -225,7 +224,7 @@ begin
   Memo1.Lines.Add('');
   Memo1.Lines.Add('end.');
 
-  Memo1.Lines.SaveToFile('U' + Tabela + '.pas');
+  Memo1.Lines.SaveToFile('U' + PrimeiraLetraMaiscula(Tabela) + '.pas');
 end;
 
 function TGerarModel.PrimeiraLetraMaiscula(Str: string): string;

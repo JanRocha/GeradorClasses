@@ -36,7 +36,7 @@ procedure TForm2.Button1Click(Sender: TObject);
 var oTabela: TTabela;
 begin
    oTabela:= TTabela.Create;
-   oTabela.Query.SQL.Add('SELECT RDB$RELATION_NAME AS TABELA FROM RDB$RELATIONS WHERE RDB$VIEW_BLR IS NULL and RDB$SYSTEM_FLAG = 0 OR RDB$SYSTEM_FLAG IS NULL');
+   oTabela.Query.SQL.Add('SELECT RDB$RELATION_NAME AS TABELA FROM RDB$RELATIONS WHERE RDB$VIEW_BLR IS NULL and RDB$SYSTEM_FLAG = 0 OR RDB$SYSTEM_FLAG IS NULL ORDER BY RDB$RELATION_NAME');
    oTabela.Query.Open();
    while not oTabela.Query.Eof do
    begin

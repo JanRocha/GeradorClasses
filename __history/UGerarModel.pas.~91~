@@ -90,8 +90,8 @@ begin
   Memo1.Lines.Add('   function Gravar(): boolean;                   ');
   Memo1.Lines.Add('   function Delete(): boolean;                   ');
   Memo1.Lines.Add('   function NomeGenerator(): string;             ');
-  Memo1.Lines.Add('   constructor Create(_id:integer = -1); ');
-  Memo1.Lines.Add('   constructor CreateFirst(_Filter:string = ''''); ');
+  Memo1.Lines.Add('   constructor Create(_id:integer = -1);overload; ');
+  Memo1.Lines.Add('   constructor Create(_Filter = '''');overload; ');
   Memo1.Lines.Add('  end;');
   Memo1.Lines.Add('');
   Memo1.Lines.Add('implementation');
@@ -123,7 +123,7 @@ begin
   Memo1.Lines.Add('end;');
   Memo1.Lines.Add('');
 
-  Memo1.Lines.Add('constructor T'+ Tabela+'.CreateFirst(_Filter: string);');
+  Memo1.Lines.Add('constructor T'+ Tabela+'.Create(_Filter: string);');
   Memo1.Lines.Add('var');
   Memo1.Lines.Add('FTabela: TTabela;  ');
   Memo1.Lines.Add('oqry   : TSQLQuery;');

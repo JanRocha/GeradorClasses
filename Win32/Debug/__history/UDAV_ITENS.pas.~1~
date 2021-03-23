@@ -1,0 +1,161 @@
+unit UDAV_ITENS;
+
+interface
+
+uses
+  Classes,
+  System.Generics.Collections,
+  System.SysUtils,            
+  Data.SqlExpr,               
+  UTabela;                    
+
+type
+  TDAV_ITENS = class(TPersistent)
+  private
+    FTabela: TTabela;
+    FID: integer;
+    FID_PRODUTO: integer;
+    FID_DAV: integer;
+    FCFOP: integer;
+    FGTIN: String;
+    FITEM: integer;
+    FQUANTIDADE: int64;
+    FVALOR_UNITARIO: int64;
+    FVALOR_CUSTO: int64;
+    FVALOR_TOTAL: int64;
+    FTOTAL_ITEM: int64;
+    FBASE_ICMS: int64;
+    FTAXA_ICMS: int64;
+    FICMS: int64;
+    FTAXA_DESCONTO: int64;
+    FDESCONTO: int64;
+    FTAXA_ACRESCIMO: int64;
+    FACRESCIMO: int64;
+    FTAXA_ISSQN: int64;
+    FISSQN: int64;
+    FTAXA_PIS: int64;
+    FPIS: int64;
+    FTAXA_COFINS: int64;
+    FCOFINS: int64;
+    FACRESCIMO_RATEIO: int64;
+    FDESCONTO_RATEIO: int64;
+    FCST: String;
+    FCANCELADO: String;
+    FMOVIMENTA_ESTOQUE: String;
+    FICMS_ST: String;
+    FID_GRADE_ITENS: integer;
+  published
+    property ID: integer read FID write FID;
+    property ID_PRODUTO: integer read FID_PRODUTO write FID_PRODUTO;
+    property ID_DAV: integer read FID_DAV write FID_DAV;
+    property CFOP: integer read FCFOP write FCFOP;
+    property GTIN: String read FGTIN write FGTIN;
+    property ITEM: integer read FITEM write FITEM;
+    property QUANTIDADE: int64 read FQUANTIDADE write FQUANTIDADE;
+    property VALOR_UNITARIO: int64 read FVALOR_UNITARIO write FVALOR_UNITARIO;
+    property VALOR_CUSTO: int64 read FVALOR_CUSTO write FVALOR_CUSTO;
+    property VALOR_TOTAL: int64 read FVALOR_TOTAL write FVALOR_TOTAL;
+    property TOTAL_ITEM: int64 read FTOTAL_ITEM write FTOTAL_ITEM;
+    property BASE_ICMS: int64 read FBASE_ICMS write FBASE_ICMS;
+    property TAXA_ICMS: int64 read FTAXA_ICMS write FTAXA_ICMS;
+    property ICMS: int64 read FICMS write FICMS;
+    property TAXA_DESCONTO: int64 read FTAXA_DESCONTO write FTAXA_DESCONTO;
+    property DESCONTO: int64 read FDESCONTO write FDESCONTO;
+    property TAXA_ACRESCIMO: int64 read FTAXA_ACRESCIMO write FTAXA_ACRESCIMO;
+    property ACRESCIMO: int64 read FACRESCIMO write FACRESCIMO;
+    property TAXA_ISSQN: int64 read FTAXA_ISSQN write FTAXA_ISSQN;
+    property ISSQN: int64 read FISSQN write FISSQN;
+    property TAXA_PIS: int64 read FTAXA_PIS write FTAXA_PIS;
+    property PIS: int64 read FPIS write FPIS;
+    property TAXA_COFINS: int64 read FTAXA_COFINS write FTAXA_COFINS;
+    property COFINS: int64 read FCOFINS write FCOFINS;
+    property ACRESCIMO_RATEIO: int64 read FACRESCIMO_RATEIO write FACRESCIMO_RATEIO;
+    property DESCONTO_RATEIO: int64 read FDESCONTO_RATEIO write FDESCONTO_RATEIO;
+    property CST: String read FCST write FCST;
+    property CANCELADO: String read FCANCELADO write FCANCELADO;
+    property MOVIMENTA_ESTOQUE: String read FMOVIMENTA_ESTOQUE write FMOVIMENTA_ESTOQUE;
+    property ICMS_ST: String read FICMS_ST write FICMS_ST;
+    property ID_GRADE_ITENS: integer read FID_GRADE_ITENS write FID_GRADE_ITENS;
+   function NomeTabela():string;
+   function Carregar(): TObjectList<TDAV_ITENS>;
+   function Gravar(): boolean;                   
+   function Delete(): boolean;                   
+   function NomeGenerator(): string;             
+  end;
+
+implementation
+
+{TDAV_ITENS}
+
+function TDAV_ITENS.NomeTabela: string;
+begin
+   Result:= 'DAV_ITENS';
+end;
+
+function TDAV_ITENS.Carregar: : TObjectList<TDAV_ITENS>;
+var
+  FTabela: TTabela;
+  oDAV_ITENS:TDAV_ITENS;
+  oqry: TSQLQuery; 
+  sSQL: string;    
+begin
+  Result := TObjectList<TDAV_ITENS>.Create; 
+  sSQL:= 'SELECT * FROM ' + NomeTabela + ' ORDER BY ID'
+  FTabela              := TTabela.Create; 
+  try                                     
+    oqry:= FTabela.Open(sSQL);            
+    while not oqry.Eof do                 
+    begin                                 
+      oDAV_ITENS:= TDAV_ITENS.Create;  
+      FTabela.Classe     := oDAV_ITENS;         
+      FTabela.SerializarObjeto(oqry, oDAV_ITENS)
+      Result.Add(oDAV_ITENS);                   
+      oqry.Next;                          
+    end;                                  
+  finally                                 
+    FTabela.Free;                         
+  end;
+end;
+
+function TDAV_ITENS.Deletar: boolean;
+begin
+var
+  sSQL: string;
+begin          
+  FTabela := TTabela.Create();   
+  try                            
+    sSQL   := 'DELETE FROM '+ NomeTabela + ' WHERE ID = '+ IntToStr(ID) ;
+    FTabela.ExecutarSQL(sSQL);   
+  finally                        
+    FTabela.Free;                
+  end;                           
+end;
+
+function TDAV_ITENS.Gravar: boolean;
+begin
+var                                             
+  sSQL: string;                                 
+begin                                           
+  FTabela := TTabela.Create();                  
+  try                                           
+    FTabela.Classe     := Self;                 
+    FTabela.NomeTabela := NomeTabela;           
+    if  ID <= 0 then                            
+    begin                                       
+      ID   := FTabela.GetNewID(NomeGenerator);  
+      sSQL := FTabela.PrepararInsert();         
+    end                                         
+    else                                        
+      sSQL := FTabela.PrepararUpdate();         
+    FTabela.ExecutarSQL(sSQL);                  
+  finally         
+    FTabela.free; 
+  end; 
+end;
+
+function TDAV_ITENS.NomeGenerator: string;
+begin
+   Result:= '';
+end;
+
+end.
