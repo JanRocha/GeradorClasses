@@ -10,6 +10,8 @@ type
     function ValidaCampo(value, precisao, subTipo: string): string;
     procedure GerarModel(Tabela: string);
     function PrimeiraLetraMaiscula(Str: string): string;
+    function PrimaryKey(Tabela:string):string;
+    function Gen(Tabela:string):string;
   end;
 
 implementation
@@ -19,11 +21,34 @@ uses
 
 { TGerarModel }
 
+function TGerarModel.Gen(Tabela: string): string;
+var
+  oTabela    : TTabela;
+begin
+  Result:= '';
+  oTabela    := TTabela.Create;
+  try
+    oTabela.Query.SQL.Add('SELECT D.RDB$DEPENDED_ON_NAME AS GENERATOR    ');
+    oTabela.Query.SQL.Add(' FROM RDB$DEPENDENCIES D                      ');
+    oTabela.Query.SQL.Add(' INNER JOIN RDB$TRIGGERS T ON T.RDB$TRIGGER_NAME = D.RDB$DEPENDENT_NAME');
+    oTabela.Query.SQL.Add(' AND D.RDB$DEPENDED_ON_NAME LIKE ''%GEN%''');
+    oTabela.Query.SQL.Add(' AND T.RDB$RELATION_NAME = ' + QuotedStr(Tabela));
+    oTabela.Query.Open();
+    Result:= oTabela.Query.FieldByName('GENERATOR').AsString;
+  finally
+    oTabela.Free;
+  end;
+end;
+
 procedure TGerarModel.GerarModel(Tabela: string);
 var
-  Memo1: TMemo;
-  oTabela: TTabela;
+  Memo1      : TMemo;
+  oTabela    : TTabela;
+  sPrimaryKey: string;
+  sGen       : string;
 begin
+  sPrimaryKey := PrimaryKey(Tabela);
+  sGen        := Gen(Tabela);
   oTabela := TTabela.Create;
   oTabela.Query.SQL.Add('SELECT R.RDB$FIELD_NAME AS Nome_Campo,');
   oTabela.Query.SQL.Add('         CASE F.RDB$FIELD_TYPE        ');
@@ -86,6 +111,7 @@ begin
   end;
   Memo1.Lines.Add('public');
   Memo1.Lines.Add('   function NomeTabela():string;');
+  Memo1.Lines.Add('   function PrimaryKey():string;');
   Memo1.Lines.Add('   function Carregar(): TObjectList<T'+Tabela+'>;');
   Memo1.Lines.Add('   function Gravar(): boolean;                   ');
   Memo1.Lines.Add('   function Delete(): boolean;                   ');
@@ -105,21 +131,21 @@ begin
   Memo1.Lines.Add('oqry   : TSQLQuery;');
   Memo1.Lines.Add('sSQL   : string;   ');
   Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('if _id > 0 then                                     ');
-  Memo1.Lines.Add('begin                                               ');
-  Memo1.Lines.Add('  sSQL    := ''SELECT * FROM '' + NomeTabela;         ');
-  Memo1.Lines.Add('  sSQL    := sSQL + '' WHERE ID = '' + IntToStr(_id); ');
-  Memo1.Lines.Add('  sSQL    := sSQL + '' ORDER BY ID'';       ');
-  Memo1.Lines.Add('  FTabela := TTabela.Create;             ');
-  Memo1.Lines.Add('  try                                     ');
-  Memo1.Lines.Add('    oqry:= FTabela.Open(sSQL);            ');
-  Memo1.Lines.Add('    FTabela.SerializarObjeto(oqry, Self); ');
-  Memo1.Lines.Add('  finally          ');
-  Memo1.Lines.Add('    FTabela.Free;  ');
-  Memo1.Lines.Add('  end;       ');
-  Memo1.Lines.Add('end          ');
-  Memo1.Lines.Add('else         ');
-  Memo1.Lines.Add('   id:= -1;  ');
+  Memo1.Lines.Add('  if _id > 0 then                                     ');
+  Memo1.Lines.Add('  begin                                               ');
+  Memo1.Lines.Add('    sSQL    := ''SELECT * FROM '' + NomeTabela;         ');
+  Memo1.Lines.Add('    sSQL    := sSQL + '' WHERE ID = '' + IntToStr(_id); ');
+  Memo1.Lines.Add('    sSQL    := sSQL + '' ORDER BY ID'';       ');
+  Memo1.Lines.Add('    FTabela := TTabela.Create;             ');
+  Memo1.Lines.Add('    try                                     ');
+  Memo1.Lines.Add('      oqry:= FTabela.Open(sSQL);            ');
+  Memo1.Lines.Add('      FTabela.SerializarObjeto(oqry, Self); ');
+  Memo1.Lines.Add('    finally          ');
+  Memo1.Lines.Add('      FTabela.Free;  ');
+  Memo1.Lines.Add('    end;       ');
+  Memo1.Lines.Add('  end          ');
+  Memo1.Lines.Add('  else         ');
+  Memo1.Lines.Add('    id:= -1;  ');
   Memo1.Lines.Add('end;');
   Memo1.Lines.Add('');
 
@@ -129,28 +155,28 @@ begin
   Memo1.Lines.Add('oqry   : TSQLQuery;');
   Memo1.Lines.Add('sSQL   : string;   ');
   Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('if _Filter <> '''' then                                     ');
-  Memo1.Lines.Add('begin                                               ');
-  Memo1.Lines.Add('_filter:= '' WHERE '' + _filter;');
-  Memo1.Lines.Add('  sSQL    := ''SELECT * FROM '' + NomeTabela;         ');
-  Memo1.Lines.Add('  sSQL    := sSQL + '' WHERE ID = '' + _Filter; ');
-  Memo1.Lines.Add('  sSQL    := sSQL + '' ORDER BY ID'';       ');
-  Memo1.Lines.Add('  FTabela := TTabela.Create;             ');
-  Memo1.Lines.Add('  try                                     ');
-  Memo1.Lines.Add('    oqry:= FTabela.Open(sSQL);            ');
-  Memo1.Lines.Add('    FTabela.SerializarObjeto(oqry, Self); ');
-  Memo1.Lines.Add('  finally          ');
-  Memo1.Lines.Add('    FTabela.Free;  ');
-  Memo1.Lines.Add('  end;       ');
-  Memo1.Lines.Add('end          ');
-  Memo1.Lines.Add('else         ');
-  Memo1.Lines.Add('   id:= -1;  ');
+  Memo1.Lines.Add('  if _Filter <> '''' then                                     ');
+  Memo1.Lines.Add('  begin                                               ');
+  Memo1.Lines.Add('    _filter:= '' WHERE '' + _filter;');
+  Memo1.Lines.Add('    sSQL    := ''SELECT * FROM '' + NomeTabela;         ');
+  Memo1.Lines.Add('    sSQL    := sSQL + _Filter; ');
+  Memo1.Lines.Add('    sSQL    := sSQL + '' ORDER BY ID'';       ');
+  Memo1.Lines.Add('    FTabela := TTabela.Create;             ');
+  Memo1.Lines.Add('    try                                     ');
+  Memo1.Lines.Add('      oqry:= FTabela.Open(sSQL);            ');
+  Memo1.Lines.Add('      FTabela.SerializarObjeto(oqry, Self); ');
+  Memo1.Lines.Add('    finally          ');
+  Memo1.Lines.Add('     FTabela.Free;  ');
+  Memo1.Lines.Add('   end;       ');
+  Memo1.Lines.Add('  end          ');
+  Memo1.Lines.Add('  else         ');
+  Memo1.Lines.Add('    id:= -1;  ');
   Memo1.Lines.Add('end;');
   Memo1.Lines.Add('');
 
   Memo1.Lines.Add('function T'+ Tabela+'.NomeTabela(): string;');
   Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('   Result:= '''+ Tabela + ''';');
+  Memo1.Lines.Add('  Result:= '''+ Tabela + ''';');
   Memo1.Lines.Add('end;');
   Memo1.Lines.Add('');
 
@@ -220,12 +246,37 @@ begin
 
   Memo1.Lines.Add('function T'+ Tabela+'.NomeGenerator(): string;');
   Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('   Result:= '''';');
+  Memo1.Lines.Add('  Result:= '+ QuotedStr(sGen)+';');
+  Memo1.Lines.Add('end;');
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('function T'+ Tabela+'.PrimaryKey():string;');
+  Memo1.Lines.Add('begin');
+  Memo1.Lines.Add('  Result:= '+ QuotedStr(sPrimaryKey) +';');
   Memo1.Lines.Add('end;');
   Memo1.Lines.Add('');
   Memo1.Lines.Add('end.');
 
   Memo1.Lines.SaveToFile('U' + Tabela + '.pas');
+end;
+
+function TGerarModel.PrimaryKey(Tabela: string): string;
+var
+  oTabela    : TTabela;
+begin
+  Result     := '';
+  oTabela    := TTabela.Create;
+  try
+    oTabela.Query.SQL.Add('SELECT IDX.RDB$FIELD_NAME AS PRIMARY_KEY');
+    oTabela.Query.SQL.Add(' FROM RDB$RELATION_CONSTRAINTS TC ');
+    oTabela.Query.SQL.Add(' JOIN RDB$INDEX_SEGMENTS IDX ON (IDX.RDB$INDEX_NAME = TC.RDB$INDEX_NAME) ');
+    oTabela.Query.SQL.Add('WHERE TC.RDB$CONSTRAINT_TYPE = ''PRIMARY KEY'' AND                         ');
+    oTabela.Query.SQL.Add('      TC.RDB$RELATION_NAME = '+ QuotedStr(Tabela));
+    oTabela.Query.SQL.Add('ORDER BY IDX.RDB$FIELD_POSITION        ');
+    oTabela.Query.Open();
+    Result:= oTabela.Query.FieldByName('PRIMARY_KEY').AsString;
+  finally
+    oTabela.Free;
+  end;
 end;
 
 function TGerarModel.PrimeiraLetraMaiscula(Str: string): string;
