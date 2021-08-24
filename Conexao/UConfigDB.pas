@@ -15,6 +15,7 @@ type
       property DB: string read FDB write FDB;
    public
       constructor Create();
+      procedure gravar();
    End;
 implementation
 
@@ -33,8 +34,20 @@ begin
    finally
       oIni.Free;
    end;
+end;
 
-
+procedure TConfigDB.gravar;
+var
+ oIni: TIniFile;
+begin
+   oIni:= TIniFile.Create(GetCurrentDir+'\Conexao.ini');
+   try
+      oIni.WriteString('CONEXAO','IP_SERVIDOR', Fip_servidor);
+      oIni.WriteString('CONEXAO','PORTA'      , Fporta);
+      oIni.WriteString('CONEXAO', 'RETAGUARDA', FDB);
+   finally
+      oIni.Free;
+   end;
 end;
 
 end.

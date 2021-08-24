@@ -1,0 +1,63 @@
+object frmGerarClassJson: TfrmGerarClassJson
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 382
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object Layout1: TLayout
+    Align = Bottom
+    Position.Y = 327.000000000000000000
+    Size.Width = 640.000000000000000000
+    Size.Height = 55.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Button2: TButton
+      Align = Right
+      Position.X = 456.000000000000000000
+      Size.Width = 184.000000000000000000
+      Size.Height = 55.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Gerar Model'
+      OnClick = Button2Click
+    end
+  end
+  object Memo1: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Lines.Strings = (
+      ' {'
+      '    "codigo": 1,'
+      '    "descricao": "CAF'#201' EXPRESSO TRADICIONAL CURTO",'
+      '    "unidadeMedida": "UN",'
+      '    "mixProduto": null,'
+      '    "codigoGrupoVenda": 1,'
+      '    "descricaoGrupoVenda": "CAF'#201'S - HUSKY",'
+      '    "codigoClassificacao": null,'
+      '    "descricaoClassificacao": null,'
+      '    "codigoLinhaProduto": null,'
+      '    "descricaoLinhaProduto": null,'
+      '    "codigoCategoria": null,'
+      '    "descricaoCategoria": null,'
+      '    "codigoBarra": null,'
+      '    "ncm": "21011200",'
+      '    "cest": "1710900",'
+      '    "valorVenda": 3,'
+      '    "ativo": "S",'
+      '    "data":"2019-09-03",'
+      '    "valor_dinheiro":10.50,'
+      '    "deliveryDateTime": "2020-01-01T00:00:00.000Z"'
+      '  }')
+    Align = Client
+    Size.Width = 640.000000000000000000
+    Size.Height = 327.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Viewport.Width = 620.000000000000000000
+    Viewport.Height = 323.000000000000000000
+  end
+end

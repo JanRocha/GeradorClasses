@@ -6,19 +6,29 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo, FMX.Layouts,
-  UGerarModel, FMX.ListView.Types, FMX.ListView.Appearances,
-  FMX.ListView.Adapters.Base, FMX.ListView, FMX.ListBox;
+  FMX.ListView.Types, FMX.ListView.Appearances,
+  FMX.ListView.Adapters.Base, FMX.ListView, FMX.ListBox,
+  UConfigDB,
+  UFrmGerarClassJson,
+  UModelDataBaseGenerator
+  ;
 
 type
   TForm2 = class(TForm)
-    Layout1: TLayout;
-    Button1: TButton;
+    StatusBar1: TStatusBar;
+    LblConexao: TLabel;
     Button2: TButton;
-    ComboBox1: TComboBox;
-    procedure Button1Click(Sender: TObject);
+    Button3: TButton;
+    Panel1: TPanel;
+    Label1: TLabel;
+    Button1: TButton;
+    OpenDialog1: TOpenDialog;
     procedure Button2Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
   private
-    { Private declarations }
+    FConfig: TConfigDB;
   public
     { Public declarations }
   end;
@@ -30,30 +40,54 @@ implementation
 
 {$R *.fmx}
 
-uses UTabelas;
-
 procedure TForm2.Button1Click(Sender: TObject);
-var oTabela: TTabela;
 begin
-   oTabela:= TTabela.Create;
-   oTabela.Query.SQL.Add('SELECT RDB$RELATION_NAME AS TABELA FROM RDB$RELATIONS WHERE RDB$VIEW_BLR IS NULL and RDB$SYSTEM_FLAG = 0 OR RDB$SYSTEM_FLAG IS NULL ORDER BY RDB$RELATION_NAME');
-   oTabela.Query.Open();
-   while not oTabela.Query.Eof do
-   begin
-     ComboBox1.Items.Add(oTabela.Query.FieldByName('TABELA').AsString);
-     oTabela.Query.Next;
-   end;
+    FConfig:= TConfigDB.Create;
+  try
+    FConfig.ip_servidor:= InputBox('Configuração','Digite o IP do servidor','127.0.0.1');
+    OpenDialog1.Title:= 'Selecione a base de dados Firebird';
+    OpenDialog1.Filter:= 'Arquivos .FDB|*.FDB|';
+    if OpenDialog1.Execute then
+       FConfig.DB := OpenDialog1.FileName;
+
+     FConfig.gravar();
+     LblConexao.Text := FConfig.ip_servidor + ':' + FConfig.DB;
+  finally
+    FConfig.Free;
+  end;
 end;
 
 procedure TForm2.Button2Click(Sender: TObject);
-var oGerar: TGerarModel;
+  begin
+  frmModelDataBaseGenerator:= TfrmModelDataBaseGenerator.Create(nil);
+  try
+    frmModelDataBaseGenerator.ShowModal;
+  finally
+    frmModelDataBaseGenerator.Free;
+  end;
+end;
+
+procedure TForm2.Button3Click(Sender: TObject);
 begin
-   oGerar:= TGerarModel.Create;
-   try
-     oGerar.GerarModel(ComboBox1.Items[ComboBox1.ItemIndex]);
-   finally
-     oGerar.Free;
-   end;
+  frmGerarClassJson:= TfrmGerarClassJson.create(nil);
+  try
+   frmGerarClassJson.showmodal;
+  finally
+    frmGerarClassJson.free;
+  end;
+end;
+
+procedure TForm2.FormShow(Sender: TObject);
+begin
+  LblConexao.Text:='';
+  FConfig:= TConfigDB.Create;
+  try
+    LblConexao.Text := FConfig.ip_servidor + ':' + FConfig.DB;
+    if LblConexao.Text = '' then
+      MessageDlg('Configure o acesso a dados',TMsgDlgType.mtwarning,[TMsgDlgBtn.mbok],0);
+  finally
+    FConfig.Free;
+  end;
 end;
 
 end.

@@ -1,0 +1,97 @@
+object frmModelDataBaseGenerator: TfrmModelDataBaseGenerator
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 480
+  ClientWidth = 759
+  Position = ScreenCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object Layout1: TLayout
+    Align = Bottom
+    Position.Y = 425.000000000000000000
+    Size.Width = 759.000000000000000000
+    Size.Height = 55.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Button1: TButton
+      Align = Left
+      Size.Width = 184.000000000000000000
+      Size.Height = 55.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Carregar tabelas'
+      OnClick = Button1Click
+    end
+    object Button2: TButton
+      Align = Right
+      Position.X = 575.000000000000000000
+      Size.Width = 184.000000000000000000
+      Size.Height = 55.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Gerar Model'
+      OnClick = Button2Click
+    end
+  end
+  object Button3: TButton
+    Position.X = 336.000000000000000000
+    Position.Y = 128.000000000000000000
+    TabOrder = 4
+    Text = '>'
+    OnClick = Button3Click
+  end
+  object Button4: TButton
+    Position.X = 337.000000000000000000
+    Position.Y = 160.000000000000000000
+    Size.Width = 79.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = '>>'
+  end
+  object Button5: TButton
+    Position.X = 337.000000000000000000
+    Position.Y = 272.000000000000000000
+    Size.Width = 79.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Text = '<<'
+  end
+  object Button6: TButton
+    Position.X = 336.000000000000000000
+    Position.Y = 240.000000000000000000
+    TabOrder = 2
+    Text = '<'
+  end
+  object listTabelaACriar: TListBox
+    Align = Right
+    Position.X = 439.000000000000000000
+    Size.Width = 320.000000000000000000
+    Size.Height = 425.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 316.000000000000000000
+    Viewport.Height = 421.000000000000000000
+  end
+  object listBanco: TListBox
+    Align = Left
+    Size.Width = 320.000000000000000000
+    Size.Height = 425.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 6
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 316.000000000000000000
+    Viewport.Height = 421.000000000000000000
+  end
+end

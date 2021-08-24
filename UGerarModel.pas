@@ -134,7 +134,7 @@ begin
   Memo1.Lines.Add('  if _id > 0 then                                     ');
   Memo1.Lines.Add('  begin                                               ');
   Memo1.Lines.Add('    sSQL    := ''SELECT * FROM '+ UpperCase(Tabela)+ ''';            ');
-  Memo1.Lines.Add('    sSQL    := sSQL + '' WHERE '+sPrimaryKey+' = '' + IntToStr(_id); ');
+  Memo1.Lines.Add('    sSQL    := sSQL + '' WHERE '+ sPrimaryKey+' = '' + IntToStr(_id); ');
   Memo1.Lines.Add('    sSQL    := sSQL + '' ORDER BY '+sPrimaryKey+''';                 ');
   Memo1.Lines.Add('    FTabela := TTabela.Create;              ');
   Memo1.Lines.Add('    try                                     ');
