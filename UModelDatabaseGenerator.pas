@@ -58,7 +58,7 @@ var
 begin
    oGerar:= TGerarModel.Create;
    try
-     for i := 0 to listTabelaACriar.Items.Count do
+     for i := 0 to listTabelaACriar.Items.Count -1 do
        oGerar.GerarModel(listTabelaACriar.Items[i]);
    finally
      oGerar.Free;

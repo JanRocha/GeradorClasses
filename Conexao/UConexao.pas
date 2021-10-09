@@ -46,7 +46,7 @@ begin
    FConfigDB                  := TConfigDB.Create;
    Connection.LoginPrompt     := false;
    Connection.Params.DriverID := 'FB';
-   Connection.Params.Database := FConfigDB.ip_servidor + ':' + FConfigDB.DB;
+   Connection.Params.Database := FConfigDB.ip_servidor+'/'+FConfigDB.porta + ':' + FConfigDB.DB;
    Connection.Params.UserName := 'SYSDBA';
    Connection.Params.Password := 'masterkey';
   end;
