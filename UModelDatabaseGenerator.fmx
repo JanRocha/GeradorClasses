@@ -21,19 +21,29 @@ object frmModelDataBaseGenerator: TfrmModelDataBaseGenerator
       Size.Width = 184.000000000000000000
       Size.Height = 55.000000000000000000
       Size.PlatformDefault = False
-      TabOrder = 1
+      TabOrder = 2
       Text = 'Carregar tabelas'
       OnClick = Button1Click
     end
     object Button2: TButton
+      Align = Right
+      Position.X = 391.000000000000000000
+      Size.Width = 184.000000000000000000
+      Size.Height = 55.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Gerar Model'
+      OnClick = Button2Click
+    end
+    object Button7: TButton
       Align = Right
       Position.X = 575.000000000000000000
       Size.Width = 184.000000000000000000
       Size.Height = 55.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      Text = 'Gerar Model'
-      OnClick = Button2Click
+      Text = 'Gerar Controller'
+      OnClick = Button7Click
     end
   end
   object Button3: TButton

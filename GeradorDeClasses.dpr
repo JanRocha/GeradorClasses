@@ -12,7 +12,8 @@ uses
   UGerarModelFromJson in 'UGerarModelFromJson.pas',
   UFrmGerarClassJson in 'UFrmGerarClassJson.pas' {frmGerarClassJson},
   Pkg.Json.Mapper in 'Pkg.Json.Mapper.pas',
-  UViewClassjon in 'UViewClassjon.pas' {frmViewClassjson};
+  UViewClassjon in 'UViewClassjon.pas' {frmViewClassjson},
+  UGerarController in 'UGerarController.pas';
 
 {$R *.res}
 

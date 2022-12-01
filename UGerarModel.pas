@@ -2,10 +2,14 @@ unit UGerarModel;
 
 interface
 
-uses Classes;
+uses
+  Classes,
+  UConfigDB;
 
 type
   TGerarModel = class(TPersistent)
+  private
+    FConfig: TConfigDB;
   public
     function ValidaCampo(value, precisao, subTipo: string): string;
     procedure GerarModel(Tabela: string);
@@ -47,217 +51,102 @@ var
   sPrimaryKey: string;
   sGen       : string;
 begin
-  sPrimaryKey := PrimaryKey(Tabela);
-  sGen        := Gen(Tabela);
-  oTabela := TTabela.Create;
-  oTabela.Query.SQL.Add('SELECT R.RDB$FIELD_NAME AS Nome_Campo,');
-  oTabela.Query.SQL.Add('         CASE F.RDB$FIELD_TYPE        ');
-  oTabela.Query.SQL.Add('           WHEN 7 THEN ''SMALLINT''     ');
-  oTabela.Query.SQL.Add('           WHEN 8 THEN ''INTEGER''      ');
-  oTabela.Query.SQL.Add('           WHEN 10 THEN ''FLOAT''       ');
-  oTabela.Query.SQL.Add('           WHEN 11 THEN ''D_FLOAT''     ');
-  oTabela.Query.SQL.Add('           WHEN 12 THEN ''DATE''        ');
-  oTabela.Query.SQL.Add('           WHEN 13 THEN ''TIME''        ');
-  oTabela.Query.SQL.Add('           WHEN 14 THEN ''CHAR''       ');
-  oTabela.Query.SQL.Add('           WHEN 16 THEN ''INT64''      ');
-  oTabela.Query.SQL.Add('           WHEN 27 THEN ''DOUBLE''      ');
-  oTabela.Query.SQL.Add('           WHEN 35 THEN ''TIMESTAMP''    ');
-  oTabela.Query.SQL.Add('           WHEN 37 THEN ''VARCHAR''     ');
-  oTabela.Query.SQL.Add('           WHEN 40 THEN ''CSTRING''       ');
-  oTabela.Query.SQL.Add('           WHEN 261 THEN ''BLOB''         ');
-  oTabela.Query.SQL.Add('           ELSE ''UNKNOWN''               ');
-  oTabela.Query.SQL.Add('          END AS Tipo_Campo,              ');
-  oTabela.Query.SQL.Add(' RDB$FIELD_PRECISION AS PRECISAO, ');
-  oTabela.Query.SQL.Add(' RDB$FIELD_SUB_TYPE  AS SUB_TIPO');
-  oTabela.Query.SQL.Add('    FROM RDB$RELATION_FIELDS R           ');
-  oTabela.Query.SQL.Add
-    ('     JOIN RDB$FIELDS F ON R.RDB$FIELD_SOURCE = F.RDB$FIELD_NAME ');
-  oTabela.Query.SQL.Add('   WHERE R.RDB$RELATION_NAME = ' + quotedSTr(Tabela));
-  oTabela.Query.SQL.Add(' ORDER BY R.RDB$FIELD_POSITION');
+  FConfig := TConfigDB.Create();
+  try
+    sPrimaryKey := PrimaryKey(Tabela);
+    sGen        := Gen(Tabela);
+    {TODO: Encapsular esta função}
+    oTabela := TTabela.Create;
+    oTabela.Query.SQL.Add('SELECT R.RDB$FIELD_NAME AS Nome_Campo,');
+    oTabela.Query.SQL.Add('         CASE F.RDB$FIELD_TYPE        ');
+    oTabela.Query.SQL.Add('           WHEN 7 THEN ''SMALLINT''     ');
+    oTabela.Query.SQL.Add('           WHEN 8 THEN ''INTEGER''      ');
+    oTabela.Query.SQL.Add('           WHEN 10 THEN ''FLOAT''       ');
+    oTabela.Query.SQL.Add('           WHEN 11 THEN ''D_FLOAT''     ');
+    oTabela.Query.SQL.Add('           WHEN 12 THEN ''DATE''        ');
+    oTabela.Query.SQL.Add('           WHEN 13 THEN ''TIME''        ');
+    oTabela.Query.SQL.Add('           WHEN 14 THEN ''CHAR''       ');
+    oTabela.Query.SQL.Add('           WHEN 16 THEN ''INT64''      ');
+    oTabela.Query.SQL.Add('           WHEN 27 THEN ''DOUBLE''      ');
+    oTabela.Query.SQL.Add('           WHEN 35 THEN ''TIMESTAMP''    ');
+    oTabela.Query.SQL.Add('           WHEN 37 THEN ''VARCHAR''     ');
+    oTabela.Query.SQL.Add('           WHEN 40 THEN ''CSTRING''       ');
+    oTabela.Query.SQL.Add('           WHEN 261 THEN ''BLOB''         ');
+    oTabela.Query.SQL.Add('           ELSE ''UNKNOWN''               ');
+    oTabela.Query.SQL.Add('          END AS Tipo_Campo,              ');
+    oTabela.Query.SQL.Add(' RDB$FIELD_PRECISION AS PRECISAO, ');
+    oTabela.Query.SQL.Add(' RDB$FIELD_SUB_TYPE  AS SUB_TIPO');
+    oTabela.Query.SQL.Add('    FROM RDB$RELATION_FIELDS R           ');
+    oTabela.Query.SQL.Add
+      ('     JOIN RDB$FIELDS F ON R.RDB$FIELD_SOURCE = F.RDB$FIELD_NAME ');
+    oTabela.Query.SQL.Add('   WHERE R.RDB$RELATION_NAME = ' + quotedSTr(Tabela));
+    oTabela.Query.SQL.Add(' ORDER BY R.RDB$FIELD_POSITION');
 
-  oTabela.Query.Open();
-  Tabela:= PrimeiraLetraMaiscula(Tabela);
-  Memo1 := TMemo.Create(nil);
-  Memo1.Lines.Add('unit U' + Tabela + ';');
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('interface');
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('uses');
-  Memo1.Lines.Add('  Classes,');
-  Memo1.Lines.Add('  System.Generics.Collections,');
-  Memo1.Lines.Add('  System.SysUtils,            ');
-  Memo1.Lines.Add('  Data.SqlExpr,               ');
-  Memo1.Lines.Add('  UTabela;                    ');
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('type');
-  Memo1.Lines.Add('  T' + Tabela + ' = class(TPersistent)');
-  Memo1.Lines.Add('  private');
-  Memo1.Lines.Add('    FTabela: TTabela;');
-  while not oTabela.Query.Eof do
-  begin
-    Memo1.Lines.Add('    F' + PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) + ': '+
-    ValidaCampo(oTabela.Query.FieldByName('Tipo_Campo').AsString,oTabela.Query.FieldByName('PRECISAO').AsString,oTabela.Query.FieldByName('SUB_TIPO').AsString) +';');
-    oTabela.Query.Next;
+    oTabela.Query.Open();
+    Tabela:= PrimeiraLetraMaiscula(Tabela);
+    Memo1 := TMemo.Create(nil);
+    Memo1.Lines.Add('unit Model.Entidade.' + Tabela + ';');
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('interface');
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('uses');
+    Memo1.Lines.Add('   Model.DAO;');
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('type');
+    Memo1.Lines.Add('  T' + Tabela + ' = class(TDAO)');
+    Memo1.Lines.Add('  private');
+
+    while not oTabela.Query.Eof do
+    begin
+      Memo1.Lines.Add('    F' + PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) + ': '+
+      ValidaCampo(oTabela.Query.FieldByName('Tipo_Campo').AsString,oTabela.Query.FieldByName('PRECISAO').AsString,oTabela.Query.FieldByName('SUB_TIPO').AsString) +';');
+      oTabela.Query.Next;
+    end;
+    Memo1.Lines.Add('  published');
+    oTabela.Query.First;
+
+    while not oTabela.Query.Eof do
+    begin
+      Memo1.Lines.Add('    property ' +PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) + ': ' +
+      ValidaCampo(oTabela.Query.FieldByName('Tipo_Campo').AsString,oTabela.Query.FieldByName('PRECISAO').AsString,oTabela.Query.FieldByName('SUB_TIPO').AsString)+
+       ' read F' + PrimeiraLetraMaiscula(PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString)) +
+       ' write F'+ PrimeiraLetraMaiscula(PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString)) +';');
+      oTabela.Query.Next;
+    end;
+    Memo1.Lines.Add('public');
+    Memo1.Lines.Add('   function NomeTabela(): string;');
+    Memo1.Lines.Add('   function PrimaryKey(): string;');
+    Memo1.Lines.Add('   function NomeGenerator(): string;');
+    Memo1.Lines.Add('  end;');
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('implementation');
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('{T'+Tabela+'}');
+    Memo1.Lines.Add('');
+
+    Memo1.Lines.Add('function T'+ Tabela+'.NomeTabela(): string;');
+    Memo1.Lines.Add('begin');
+    Memo1.Lines.Add('  Result := '''+ Tabela + ''';');
+    Memo1.Lines.Add('end;');
+    Memo1.Lines.Add('');
+
+    Memo1.Lines.Add('function T'+ Tabela+'.NomeGenerator(): string;');
+    Memo1.Lines.Add('begin');
+    Memo1.Lines.Add('  Result := '+ QuotedStr(sGen)+';');
+    Memo1.Lines.Add('end;');
+    Memo1.Lines.Add('');
+
+    Memo1.Lines.Add('function T'+ Tabela+'.PrimaryKey(): string;');
+    Memo1.Lines.Add('begin');
+    Memo1.Lines.Add('  Result := '+ QuotedStr(sPrimaryKey) +';');
+    Memo1.Lines.Add('end;');
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('end.');
+
+    Memo1.Lines.SaveToFile(FConfig.CaminhoProjeto + 'Model\Entidades\Model.Entidade.' + Tabela + '.pas');
+  finally
+    FConfig.Free();
   end;
-  Memo1.Lines.Add('  published');
-  oTabela.Query.First;
-  while not oTabela.Query.Eof do
-  begin
-    Memo1.Lines.Add('    property ' +PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) + ': ' +
-    ValidaCampo(oTabela.Query.FieldByName('Tipo_Campo').AsString,oTabela.Query.FieldByName('PRECISAO').AsString,oTabela.Query.FieldByName('SUB_TIPO').AsString)+
-     ' read F' + PrimeiraLetraMaiscula(PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString)) +
-     ' write F'+ PrimeiraLetraMaiscula(PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString)) +';');
-    oTabela.Query.Next;
-  end;
-  Memo1.Lines.Add('public');
-  Memo1.Lines.Add('   function NomeTabela():string;');
-  Memo1.Lines.Add('   function PrimaryKey():string;');
-  Memo1.Lines.Add('   function Carregar(): TObjectList<T'+Tabela+'>;');
-  Memo1.Lines.Add('   function Gravar(): boolean;                   ');
-  Memo1.Lines.Add('   function Delete(): boolean;                   ');
-  Memo1.Lines.Add('   function NomeGenerator(): string;             ');
-  Memo1.Lines.Add('   constructor Create(_id:integer = -1); ');
-  Memo1.Lines.Add('   constructor CreateFirst(_Filter:string = ''''); ');
-  Memo1.Lines.Add('  end;');
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('implementation');
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('{T'+Tabela+'}');
-  Memo1.Lines.Add('');
-
-  Memo1.Lines.Add('constructor T'+ Tabela+'.Create(_id: integer);');
-  Memo1.Lines.Add('var');
-  Memo1.Lines.Add('FTabela: TTabela;  ');
-  Memo1.Lines.Add('oqry   : TSQLQuery;');
-  Memo1.Lines.Add('sSQL   : string;   ');
-  Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('  if _id > 0 then                                     ');
-  Memo1.Lines.Add('  begin                                               ');
-  Memo1.Lines.Add('    sSQL    := ''SELECT * FROM '+ UpperCase(Tabela)+ ''';            ');
-  Memo1.Lines.Add('    sSQL    := sSQL + '' WHERE '+ sPrimaryKey+' = '' + IntToStr(_id); ');
-  Memo1.Lines.Add('    sSQL    := sSQL + '' ORDER BY '+sPrimaryKey+''';                 ');
-  Memo1.Lines.Add('    FTabela := TTabela.Create;              ');
-  Memo1.Lines.Add('    try                                     ');
-  Memo1.Lines.Add('      oqry:= FTabela.Open(sSQL);            ');
-  Memo1.Lines.Add('      FTabela.SerializarObjeto(oqry, Self); ');
-  Memo1.Lines.Add('    finally          ');
-  Memo1.Lines.Add('      FTabela.Free;  ');
-  Memo1.Lines.Add('    end;       ');
-  Memo1.Lines.Add('  end          ');
-  Memo1.Lines.Add('  else         ');
-  Memo1.Lines.Add('    '+sPrimaryKey+' := -1;  ');
-  Memo1.Lines.Add('end;');
-  Memo1.Lines.Add('');
-
-  Memo1.Lines.Add('constructor T'+ Tabela+'.CreateFirst(_Filter: string);');
-  Memo1.Lines.Add('var');
-  Memo1.Lines.Add('  FTabela: TTabela;  ');
-  Memo1.Lines.Add('  oqry   : TSQLQuery;');
-  Memo1.Lines.Add('  sSQL   : string;   ');
-  Memo1.Lines.Add('begin                ');
-  Memo1.Lines.Add('  if _Filter <> '''' then                                ');
-  Memo1.Lines.Add('  begin                                                  ');
-  Memo1.Lines.Add('    _filter:= '' WHERE '' + _filter;                     ');
-  Memo1.Lines.Add('    sSQL    := ''SELECT * FROM '+ UpperCase(Tabela)+'''; ');
-  Memo1.Lines.Add('    sSQL    := sSQL + _Filter;                           ');
-  Memo1.Lines.Add('    sSQL    := sSQL + '' ORDER BY '+sPrimaryKey+''';     ');
-  Memo1.Lines.Add('    FTabela := TTabela.Create;                           ');
-  Memo1.Lines.Add('    try                                     ');
-  Memo1.Lines.Add('      oqry:= FTabela.Open(sSQL);            ');
-  Memo1.Lines.Add('      FTabela.SerializarObjeto(oqry, Self); ');
-  Memo1.Lines.Add('    finally                ');
-  Memo1.Lines.Add('     FTabela.Free;         ');
-  Memo1.Lines.Add('   end;                    ');
-  Memo1.Lines.Add('  end                      ');
-  Memo1.Lines.Add('  else                     ');
-  Memo1.Lines.Add('    '+sPrimaryKey+':= -1;  ');
-  Memo1.Lines.Add('end;                       ');
-  Memo1.Lines.Add('');
-
-  Memo1.Lines.Add('function T'+ Tabela+'.NomeTabela(): string;');
-  Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('  Result:= '''+ Tabela + ''';');
-  Memo1.Lines.Add('end;');
-  Memo1.Lines.Add('');
-
-  Memo1.Lines.Add('function T'+ Tabela+'.Carregar(): TObjectList<T'+Tabela+'>;');
-  Memo1.Lines.Add('var');
-  Memo1.Lines.Add('  FTabela: TTabela;');
-  Memo1.Lines.Add('  o'+Tabela+':T'+Tabela+';');
-  Memo1.Lines.Add('  oqry: TSQLQuery; ');
-  Memo1.Lines.Add('  sSQL: string;    ');
-  Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('  Result := TObjectList<T'+Tabela+'>.Create; ');
-  Memo1.Lines.Add('  sSQL:= ''SELECT * FROM '+ UpperCase(Tabela)+' ORDER BY '+sPrimaryKey+''';');
-  Memo1.Lines.Add('  FTabela              := TTabela.Create; ');
-  Memo1.Lines.Add('  try                                     ');
-  Memo1.Lines.Add('    oqry:= FTabela.Open(sSQL);            ');
-  Memo1.Lines.Add('    while not oqry.Eof do                 ');
-  Memo1.Lines.Add('    begin                                 ');
-  Memo1.Lines.Add('      o'+Tabela +'   := T'+Tabela+'.Create;  ');
-  Memo1.Lines.Add('      FTabela.Classe := o'+Tabela +';        ');
-  Memo1.Lines.Add('      FTabela.SerializarObjeto(oqry, o'+Tabela + ');');
-  Memo1.Lines.Add('      Result.Add(o'+Tabela+');                   ');
-  Memo1.Lines.Add('      oqry.Next;                          ');
-  Memo1.Lines.Add('    end;                                  ');
-  Memo1.Lines.Add('  finally                                 ');
-  Memo1.Lines.Add('    FTabela.Free;                         ');
-  Memo1.Lines.Add('  end;');
-  Memo1.Lines.Add('end;');
-  Memo1.Lines.Add('');
-
-  Memo1.Lines.Add('function T'+ Tabela+'.Delete(): boolean;');
-  Memo1.Lines.Add('var');
-  Memo1.Lines.Add('  sSQL: string;');
-  Memo1.Lines.Add('begin          ');
-  Memo1.Lines.Add('  Result:= True;');
-  Memo1.Lines.Add('  FTabela := TTabela.Create();   ');
-  Memo1.Lines.Add('  try                            ');
-  Memo1.Lines.Add('    sSQL   := ''DELETE FROM '+ UpperCase(Tabela)+' WHERE '+sPrimaryKey+' = ''+ IntToStr('+sPrimaryKey+') ;');
-  Memo1.Lines.Add('    FTabela.ExecutarSQL(sSQL);   ');
-  Memo1.Lines.Add('  finally                        ');
-  Memo1.Lines.Add('    FTabela.Free;                ');
-  Memo1.Lines.Add('  end;                           ');
-  Memo1.Lines.Add('end;');
-  Memo1.Lines.Add('');
-
-  Memo1.Lines.Add('function T'+ Tabela+'.Gravar(): boolean;');
-  Memo1.Lines.Add('var                                             ');
-  Memo1.Lines.Add('  sSQL: string;                                 ');
-  Memo1.Lines.Add('begin                                           ');
-  Memo1.Lines.Add('  Result  := True;');
-  Memo1.Lines.Add('  FTabela := TTabela.Create();                  ');
-  Memo1.Lines.Add('  try                                           ');
-  Memo1.Lines.Add('    FTabela.Classe     := Self;                 ');
-  Memo1.Lines.Add('    FTabela.NomeTabela := NomeTabela;           ');
-  Memo1.Lines.Add('    if  '+sPrimaryKey+' <= 0 then                            ');
-  Memo1.Lines.Add('    begin                                       ');
-  Memo1.Lines.Add('      '+sPrimaryKey+'   := FTabela.GetNewID(NomeGenerator);  ');
-  Memo1.Lines.Add('      sSQL := FTabela.PrepararInsert();         ');
-  Memo1.Lines.Add('    end                                         ');
-  Memo1.Lines.Add('    else                                        ');
-  Memo1.Lines.Add('      sSQL := FTabela.PrepararUpdate();         ');
-  Memo1.Lines.Add('    FTabela.ExecutarSQL(sSQL);                  ');
-  Memo1.Lines.Add('  finally         ');
-  Memo1.Lines.Add('    FTabela.free; ');
-  Memo1.Lines.Add('  end; ');
-  Memo1.Lines.Add('end;');
-  Memo1.Lines.Add('');
-
-  Memo1.Lines.Add('function T'+ Tabela+'.NomeGenerator(): string;');
-  Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('  Result:= '+ QuotedStr(sGen)+';');
-  Memo1.Lines.Add('end;');
-  Memo1.Lines.Add('');
-
-  Memo1.Lines.Add('function T'+ Tabela+'.PrimaryKey():string;');
-  Memo1.Lines.Add('begin');
-  Memo1.Lines.Add('  Result:= '+ QuotedStr(sPrimaryKey) +';');
-  Memo1.Lines.Add('end;');
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('end.');
-
-  Memo1.Lines.SaveToFile('U' + Tabela + '.pas');
 end;
 
 function TGerarModel.PrimaryKey(Tabela: string): string;

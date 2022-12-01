@@ -10,25 +10,32 @@ uses
   FMX.ListView.Adapters.Base, FMX.ListView, FMX.ListBox,
   UConfigDB,
   UFrmGerarClassJson,
-  UModelDataBaseGenerator
+  UModelDataBaseGenerator, FMX.Edit, FMX.Objects
   ;
 
 type
   TForm2 = class(TForm)
     StatusBar1: TStatusBar;
     LblConexao: TLabel;
-    Button2: TButton;
-    Button3: TButton;
     Panel1: TPanel;
     Label1: TLabel;
-    Button1: TButton;
     OpenDialog1: TOpenDialog;
+    Panel2: TPanel;
+    Button3: TButton;
+    Button2: TButton;
+    Button1: TButton;
+    Panel3: TPanel;
+    Label2: TLabel;
+    Edit1: TEdit;
+    Button4: TButton;
     procedure Button2Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
     FConfig: TConfigDB;
+    function SelectADirectory(Title: string): string;
   public
     { Public declarations }
   end;
@@ -39,6 +46,19 @@ var
 implementation
 
 {$R *.fmx}
+
+function TForm2.SelectADirectory(Title : string) : string;
+var
+  Pasta : String;
+begin
+  SelectDirectory(Title, '', Pasta);
+
+  if (Trim(Pasta) <> '') then
+    if (Pasta[Length(Pasta)] <> '\') then
+      Pasta := Pasta + '\';
+
+  Result := Pasta;
+end;
 
 procedure TForm2.Button1Click(Sender: TObject);
 begin
@@ -77,6 +97,22 @@ begin
   end;
 end;
 
+procedure TForm2.Button4Click(Sender: TObject);
+begin
+  Edit1.Text := SelectADirectory('Selecione a pasta raiz do projeto');
+
+  if DirectoryExists(Edit1.Text) then
+  begin
+    FConfig:= TConfigDB.Create;
+    try
+      FConfig.CaminhoProjeto := Edit1.Text;
+      FConfig.gravar();
+    finally
+      FConfig.Free();
+    end;
+  end;
+end;
+
 procedure TForm2.FormShow(Sender: TObject);
 begin
   LblConexao.Text:='';
@@ -85,6 +121,8 @@ begin
     LblConexao.Text := FConfig.ip_servidor + ':' + FConfig.DB;
     if LblConexao.Text = '' then
       MessageDlg('Configure o acesso a dados',TMsgDlgType.mtwarning,[TMsgDlgBtn.mbok],0);
+
+    Edit1.Text := FConfig.CaminhoProjeto;
   finally
     FConfig.Free;
   end;

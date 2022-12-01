@@ -269,6 +269,7 @@
             <Form>frmViewClassjson</Form>
             <FormType>fmx</FormType>
         </DCCReference>
+        <DCCReference Include="UGerarController.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

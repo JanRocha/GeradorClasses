@@ -22,9 +22,11 @@ type
     Button6: TButton;
     listTabelaACriar: TListBox;
     listBanco: TListBox;
+    Button7: TButton;
     procedure Button2Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -35,6 +37,9 @@ var
   frmModelDataBaseGenerator: TfrmModelDataBaseGenerator;
 
 implementation
+
+uses
+  UGerarController;
 
 {$R *.fmx}
 
@@ -78,6 +83,21 @@ begin
   index:= 1;
   listBanco.ItemIndex := index - 1;
   listBanco.SetFocus;
+
+end;
+
+procedure TfrmModelDataBaseGenerator.Button7Click(Sender: TObject);
+var
+  oGerar: TGerarController;
+  i: integer;
+begin
+   oGerar:= TGerarController.Create();
+   try
+     for i := 0 to listTabelaACriar.Items.Count -1 do
+       oGerar.GerarController(listTabelaACriar.Items[i]);
+   finally
+     oGerar.Free();
+   end;
 
 end;
 
