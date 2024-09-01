@@ -15,7 +15,7 @@ object frmViewClassjson: TfrmViewClassjson
     Size.Height = 480.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
-    Viewport.Width = 636.000000000000000000
-    Viewport.Height = 476.000000000000000000
+    Viewport.Width = 640.000000000000000000
+    Viewport.Height = 480.000000000000000000
   end
 end

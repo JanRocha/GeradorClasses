@@ -94,7 +94,7 @@ begin
    oGerar:= TGerarController.Create();
    try
      for i := 0 to listTabelaACriar.Items.Count -1 do
-       oGerar.GerarController(listTabelaACriar.Items[i]);
+       oGerar.GerarController(LowerCase(listTabelaACriar.Items[i]));
    finally
      oGerar.Free();
    end;

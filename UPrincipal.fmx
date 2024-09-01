@@ -104,7 +104,7 @@ object Form2: TForm2
     object Label2: TLabel
       Position.X = 8.000000000000000000
       Position.Y = 16.000000000000000000
-      Text = 'Pasta do projeto'
+      Text = 'Pasta de destino'
       TabOrder = 1
     end
     object Edit1: TEdit

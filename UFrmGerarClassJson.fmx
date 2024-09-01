@@ -57,7 +57,7 @@ object frmGerarClassJson: TfrmGerarClassJson
     Size.Height = 327.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
-    Viewport.Width = 620.000000000000000000
-    Viewport.Height = 323.000000000000000000
+    Viewport.Width = 640.000000000000000000
+    Viewport.Height = 327.000000000000000000
   end
 end

@@ -90,10 +90,12 @@ begin
     Memo1.Lines.Add('interface');
     Memo1.Lines.Add('');
     Memo1.Lines.Add('uses');
-    Memo1.Lines.Add('   Model.DAO;');
+    Memo1.Lines.Add('  Rtti.Atributos,');
+    Memo1.Lines.Add('  Classes;');
     Memo1.Lines.Add('');
     Memo1.Lines.Add('type');
-    Memo1.Lines.Add('  T' + Tabela + ' = class(TDAO)');
+    Memo1.Lines.Add('  [Tabela(''' + UpperCase(Tabela) + ''')]');
+    Memo1.Lines.Add('  T' + Tabela + ' = class(TPersistent)');
     Memo1.Lines.Add('  private');
 
     while not oTabela.Query.Eof do
@@ -107,43 +109,27 @@ begin
 
     while not oTabela.Query.Eof do
     begin
-      Memo1.Lines.Add('    property ' +PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) + ': ' +
+      if oTabela.Query.FieldByName('Nome_Campo').AsString = 'ID' then
+        Memo1.Lines.Add('    [Pk]');
+      if  pos('ID_', oTabela.Query.FieldByName('Nome_Campo').AsString) > 0 then
+        Memo1.Lines.Add('    [Fk]');
+      if oTabela.Query.FieldByName('Nome_Campo').AsString = 'OID' then
+        Memo1.Lines.Add('    [Ignore]');
+
+      Memo1.Lines.Add('    property ' + PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString) + ': ' +
       ValidaCampo(oTabela.Query.FieldByName('Tipo_Campo').AsString,oTabela.Query.FieldByName('PRECISAO').AsString,oTabela.Query.FieldByName('SUB_TIPO').AsString)+
        ' read F' + PrimeiraLetraMaiscula(PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString)) +
        ' write F'+ PrimeiraLetraMaiscula(PrimeiraLetraMaiscula(oTabela.Query.FieldByName('Nome_Campo').AsString)) +';');
       oTabela.Query.Next;
     end;
-    Memo1.Lines.Add('public');
-    Memo1.Lines.Add('   function NomeTabela(): string;');
-    Memo1.Lines.Add('   function PrimaryKey(): string;');
-    Memo1.Lines.Add('   function NomeGenerator(): string;');
     Memo1.Lines.Add('  end;');
     Memo1.Lines.Add('');
     Memo1.Lines.Add('implementation');
     Memo1.Lines.Add('');
     Memo1.Lines.Add('{T'+Tabela+'}');
     Memo1.Lines.Add('');
-
-    Memo1.Lines.Add('function T'+ Tabela+'.NomeTabela(): string;');
-    Memo1.Lines.Add('begin');
-    Memo1.Lines.Add('  Result := '''+ Tabela + ''';');
-    Memo1.Lines.Add('end;');
-    Memo1.Lines.Add('');
-
-    Memo1.Lines.Add('function T'+ Tabela+'.NomeGenerator(): string;');
-    Memo1.Lines.Add('begin');
-    Memo1.Lines.Add('  Result := '+ QuotedStr(sGen)+';');
-    Memo1.Lines.Add('end;');
-    Memo1.Lines.Add('');
-
-    Memo1.Lines.Add('function T'+ Tabela+'.PrimaryKey(): string;');
-    Memo1.Lines.Add('begin');
-    Memo1.Lines.Add('  Result := '+ QuotedStr(sPrimaryKey) +';');
-    Memo1.Lines.Add('end;');
-    Memo1.Lines.Add('');
     Memo1.Lines.Add('end.');
-
-    Memo1.Lines.SaveToFile(FConfig.CaminhoProjeto + 'Model\Entidades\Model.Entidade.' + Tabela + '.pas');
+    Memo1.Lines.SaveToFile(FConfig.CaminhoProjeto + 'Model.Entidade.' + Tabela + '.pas');
   finally
     FConfig.Free();
   end;
@@ -195,11 +181,11 @@ end;
 function TGerarModel.ValidaCampo(value, precisao, subTipo: string): string;
 begin
   if value = 'SMALLINT' then
-    Result := 'integer'
+    Result := 'Integer'
   else if value = 'INTEGER' then
-    Result := 'integer'
+    Result := 'Integer'
   else if value = 'SMALLINT' then
-    Result := 'integer'
+    Result := 'Integer'
   else if value = 'FLOAT' then
     Result := 'Currency'
   else if value = 'D_FLOAT' then
@@ -209,22 +195,22 @@ begin
   else if value = 'TIME' then
     Result := 'TTime'
   else if value = 'CHAR' then
-    Result := 'String'
+    Result := 'string'
   else if value = 'INT64' then
   begin
     if (precisao = '18')and  (StrToInt(subTipo) > 0) then
     Result := 'Currency'
     else
-    Result := 'int64';
+    Result := 'Int64';
   end
   else if value = 'DOUBLE' then
     Result := 'Currency'
   else if value = 'TIMESTAMP' then
     Result := 'Tdatetime'
   else if value = 'CSTRING' then
-    Result := 'String'
+    Result := 'string'
   else
-    Result := 'String';
+    Result := 'string';
 
 end;
 

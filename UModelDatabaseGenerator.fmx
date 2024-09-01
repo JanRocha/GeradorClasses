@@ -1,7 +1,7 @@
 object frmModelDataBaseGenerator: TfrmModelDataBaseGenerator
   Left = 0
   Top = 0
-  Caption = 'Form1'
+  Caption = 'Listagem de tabelas'
   ClientHeight = 480
   ClientWidth = 759
   Position = ScreenCenter
