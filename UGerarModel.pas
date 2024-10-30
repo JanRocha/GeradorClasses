@@ -198,10 +198,10 @@ begin
     Result := 'string'
   else if value = 'INT64' then
   begin
-    if (precisao = '18')and  (StrToInt(subTipo) > 0) then
-    Result := 'Currency'
+    if (StrToIntDef(precisao, 0) > 0) and  (StrToIntDef(subTipo, 0) > 0) then
+      Result := 'Currency'
     else
-    Result := 'Int64';
+      Result := 'Int64';
   end
   else if value = 'DOUBLE' then
     Result := 'Currency'

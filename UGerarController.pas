@@ -162,7 +162,7 @@ begin
       Add('    FDAO.Update(F' + lNomeClasse + ')');
       Add('  else');
       Add('  begin');
-      Add('  F' + lNomeClasse + 'Id_usuario := TSession.Id_usuario;');
+      Add('    F' + lNomeClasse + '.Id_usuario := TSession.Id_usuario;');
       Add('    if FDAO.Insert(F' + lNomeClasse + ') then');
       Add('    F' + lNomeClasse + '.Id := FDAO.LastId();');
       Add('  end;');
